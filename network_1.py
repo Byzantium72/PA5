@@ -1,6 +1,6 @@
 import queue
 import threading
-from link_1 import LinkFrame as link
+from link_1 import LinkFrame
 
 
 ## wrapper class for a queue of packets
@@ -75,7 +75,42 @@ class NetworkPacket:
         dst = byte_S[0 : NetworkPacket.dst_S_length].strip('0')
         data_S = byte_S[NetworkPacket.dst_S_length : ]        
         return self(dst, data_S)
+
+
+class MPLSFrame:
+    ## packet encoding lengths 
+    dst_S_length = 5
+    label_S_length = 5
     
+    ##@param dst: address of the destination host
+    # @param data_S: packet payload
+    # @param priority: packet priority
+    def __init__(self, label, dst, data_S, priority=0):
+        self.dst = dst
+        self.label = label
+        self.data_S = data_S
+        #TODO: add priority to the packet class
+        
+    ## called when printing the object
+    def __str__(self):
+        return self.to_byte_S()
+        
+    ## convert packet to a byte string for transmission over links
+    def to_byte_S(self):
+        byte_S = str(self.label).zfill(self.label_S_length)
+        byte_S += str(self.dst).zfill(self.dst_S_length)
+        byte_S += self.data_S
+        return byte_S
+    
+    ## extract a packet object from a byte string
+    # @param byte_S: byte string representation of the packet
+    @classmethod
+    def from_byte_S(self, byte_S):
+        label = byte_S[0 : MPLSFrame.label_S_length].strip('0')
+        dst = byte_S[MPLSFrame.label_S_length : MPLSFrame.dst_S_length].strip('0')
+        data_S = byte_S[MPLSFrame.dst_S_length : ]        
+        return self(label, dst, data_S)
+
 
 ## Implements a network host for receiving and transmitting data
 class Host:
@@ -168,9 +203,9 @@ class Router:
                 self.process_network_packet(p, i)
             elif fr.type_S == "MPLS":
                 # TODO: handle MPLS frames
-                # m_fr = MPLSFrame.from_byte_S(pkt_S) #parse a frame out
+                m_fr = MPLSFrame.from_byte_S(pkt_S) #parse a frame out
                 #for now, we just relabel the packet as an MPLS frame without encapsulation
-                m_fr = p
+                # m_fr = p
                 #send the MPLS frame for processing
                 self.process_MPLS_frame(m_fr, i)
             else:
