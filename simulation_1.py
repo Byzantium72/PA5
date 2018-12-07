@@ -19,8 +19,8 @@ if __name__ == '__main__':
     object_L.append(host_2)
     
     #create routers and routing tables for connected clients (subnets)
-    encap_tbl_D = {}    # table used to encapsulate network packets into MPLS frames
-    frwd_tbl_D = {}     # table used to forward MPLS frames
+    encap_tbl_D = {'H2': '9'}    # table used to encapsulate network packets into MPLS frames
+    frwd_tbl_D = {'9': ['12', 'H2', 1]}     # table used to forward MPLS frames
     decap_tbl_D = {}    # table used to decapsulate network packets from MPLS frames
     router_a = Router(name='RA', 
                               intf_capacity_L=[500,500],
@@ -31,8 +31,8 @@ if __name__ == '__main__':
     object_L.append(router_a)
 
     encap_tbl_D = {}    
-    frwd_tbl_D = {}     
-    decap_tbl_D = {}    
+    frwd_tbl_D = {'12': ['11', 'H2', 1]}
+    decap_tbl_D = {'11': 'H2'}    
     router_b = Router(name='RB', 
                               intf_capacity_L=[500,100],
                               encap_tbl_D = encap_tbl_D,
