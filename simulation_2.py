@@ -17,11 +17,14 @@ if __name__ == '__main__':
     object_L.append(host_1)
     host_2 = Host('H2')
     object_L.append(host_2)
+    host_3 = Host('H3')
+    object_L.append(host_3)
     
     #create routers and routing tables for connected clients (subnets)
-    encap_tbl_D = {'H2': '9'}    # table used to encapsulate network packets into MPLS frames
-    frwd_tbl_D = {'9': ['12', 'H2', 1]}     # table used to forward MPLS frames
-    decap_tbl_D = {}    # table used to decapsulate network packets from MPLS frames
+    encap_tbl_D = {'H1': '1','H2': '2','H3': '3'}    # table used to encapsulate network packets into MPLS frames
+    #Still need to be able to have source, to send to new route
+    frwd_tbl_D = {'1': ['99', 'H1', 3], '2':['98','H2',2], '3':['4','RB',0]}     # table used to forward MPLS frames
+    decap_tbl_D = {'99':'H1','98':'H2'}    # table used to decapsulate network packets from MPLS frames
     router_a = Router(name='RA', 
                               intf_capacity_L=[500,500],
                               encap_tbl_D = encap_tbl_D,
@@ -30,8 +33,11 @@ if __name__ == '__main__':
                               max_queue_size=router_queue_size)
     object_L.append(router_a)
 
-    encap_tbl_D = {}    
-    frwd_tbl_D = {'12': ['11', 'H2', 1]}
+    #H1 here is where you're sending it, and 11 is on what interface I think
+    encap_tbl_D = {'H1': '11'}
+    #12 here is what it's coming in as, then 11 is what you're putting it in as next, destination, and the interface
+    frwd_tbl_D = {'12': ['11', 'H2', 1], '11':['12','H1',0]}
+    #If it's 11, decapsulate, and send it to H2
     decap_tbl_D = {'11': 'H2'}    
     router_b = Router(name='RB', 
                               intf_capacity_L=[500,100],
@@ -40,15 +46,42 @@ if __name__ == '__main__':
                               decap_tbl_D = decap_tbl_D,
                               max_queue_size=router_queue_size)
     object_L.append(router_b)
+
+    encap_tbl_D = {}
+    frwd_tbl_D = {'12': ['11', 'H2', 1]}
+    decap_tbl_D = {'11': 'H2'}
+    router_b = Router(name='RC',
+                              intf_capacity_L=[500,100],
+                              encap_tbl_D = encap_tbl_D,
+                              frwd_tbl_D = frwd_tbl_D,
+                              decap_tbl_D = decap_tbl_D,
+                              max_queue_size=router_queue_size)
+    object_L.append(router_c)
+
+    encap_tbl_D = {}
+    frwd_tbl_D = {'12': ['11', 'H2', 1]}
+    decap_tbl_D = {'11': 'H2'}
+    router_b = Router(name='RD',
+                              intf_capacity_L=[500,100],
+                              encap_tbl_D = encap_tbl_D,
+                              frwd_tbl_D = frwd_tbl_D,
+                              decap_tbl_D = decap_tbl_D,
+                              max_queue_size=router_queue_size)
+    object_L.append(router_d)
+
+
+
     
     #create a Link Layer to keep track of links between network nodes
     link_layer = LinkLayer()
     object_L.append(link_layer)
     
     #add all the links - need to reflect the connectivity in cost_D tables above
-    link_layer.add_link(Link(host_1, 0, router_a, 0))
-    link_layer.add_link(Link(router_a, 1, router_b, 0))
-    link_layer.add_link(Link(router_b, 1, host_2, 0))
+    link_layer.add_link(Link(host_1, 0, router_a, 3))
+    link_layer.add_link(Link(host_2, 0, router_a, 2))
+
+    link_layer.add_link(Link(router_a, 0, router_b, 1))
+    link_layer.add_link(Link(router_a, 1, router_c, 0))
     
     
     #start all the objects

@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     encap_tbl_D = {'H1': '11'}
     #12 here is what it's coming in as, then 11 is what you're putting it in as next, destination, and the interface
-    frwd_tbl_D = {'12': ['11', 'H2', 1], '11':['12','H1',0]}
+    frwd_tbl_D = {'12': ['11', 'H2', 0], '11':['12','H1',0]}
     #If it's 11, decapsulate, and send it to H2
     decap_tbl_D = {'11': 'H2'}    
     router_b = Router(name='RB', 
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     link_layer = LinkLayer()
     object_L.append(link_layer)
     
-    #add all the links - need to reflect the connectivity in cost_D tables above
+    #add all the links - need to reflect the connectivity in tables above
     link_layer.add_link(Link(host_1, 0, router_a, 0))
     link_layer.add_link(Link(router_a, 1, router_b, 0))
     link_layer.add_link(Link(router_b, 1, host_2, 0))
@@ -63,6 +63,7 @@ if __name__ == '__main__':
     for t in thread_L:
         t.start()
 
+                                    #Message number, then priority
     host_2.udt_send('H1', 'MESSAGE_%d_FROM_H2' % 0, 0)
     #create some send events    
     for i in range(5):
