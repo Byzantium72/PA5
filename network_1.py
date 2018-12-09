@@ -211,7 +211,7 @@ class Router:
             #decapsulate the packet
             fr = LinkFrame.from_byte_S(fr_S)
             pkt_S = fr.data_S
-            print("Packet_S when read in " + str(pkt_S))
+            #print("Packet_S when read in " + str(pkt_S))
             #process the packet as network, or MPLS
             if fr.type_S == "Network":
                 p = NetworkPacket.from_byte_S(pkt_S) #parse a packet out
