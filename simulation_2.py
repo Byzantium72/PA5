@@ -61,7 +61,7 @@ if __name__ == '__main__':
     #create routers and routing tables for connected clients (subnets)
     encap_tbl_D = {'H1': '1','H2': '2'}    # table used to encapsulate network packets into MPLS frames
     #Still need to be able to have source, to send to new route
-    frwd_tbl_D = {'1': ['7', 'H1', 2], '2':['8','H2',1], '3':['97','H3',0]}     # table used to forward MPLS frames
+    frwd_tbl_D = {'1': ['7', 'H1', 2], '2':['8','H2',1], '6':['97','H3',0]}     # table used to forward MPLS frames
     decap_tbl_D = {'97':'H3'}    # table used to decapsulate network packets from MPLS frames
     router_d = Router(name='RD',
                               intf_capacity_L=[500,500, 500],
@@ -99,10 +99,10 @@ if __name__ == '__main__':
         t.start()
 
     #Currently, h1 and h2 will send through the same path, but h3 will send through different. Should be improved.
-    #host_1.udt_send('H2', 'MESSAGE_%d_FROM_H1' % 0, 0)
+   # host_1.udt_send('H2', 'MESSAGE_%d_FROM_H1' % 0, 0)
     host_1.udt_send('H3', 'MESSAGE_%d_FROM_H1' % 1, 1)
-    #host_2.udt_send('H3', 'MESSAGE_%d_FROM_H2' % 0, 0)
-    #host_3.udt_send('H1', 'MESSAGE_%d_FROM_H3' % 0, 1)
+   # host_2.udt_send('H3', 'MESSAGE_%d_FROM_H2' % 0, 0)
+   # host_3.udt_send('H1', 'MESSAGE_%d_FROM_H3' % 0, 1)
 
     #create some send events    
     # for i in range(5):
