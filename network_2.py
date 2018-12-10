@@ -217,9 +217,7 @@ class Router:
                 p = NetworkPacket.from_byte_S(pkt_S) #parse a packet out
                 self.process_network_packet(p, i)
             elif fr.type_S == "MPLS":
-                # TODO: handle MPLS frames
                 m_fr = MPLSFrame.from_byte_S(pkt_S) #parse a frame out
-                #for now, we just relabel the packet as an MPLS frame without encapsulation
                 # m_fr = p
                 #m_fr = MPLSFrame.from_byte_S(str(m_fr))
                 print("MPLS at beginning of handling " + str(m_fr))
@@ -237,7 +235,10 @@ class Router:
         data_S = pkt.to_byte_S()
         #destination = str(self.encap_tbl_D[pkt.dst).zfill(pkt.dst_S_length))
         #print("***********content of dictionary: " + str(self.encap_tbl_D.get(pkt.dst, '').zfill(MPLSFrame.label_S_length) + pkt.to_byte_S()))
-        m_fr = MPLSFrame.from_byte_S(self.encap_tbl_D.get(pkt.dst, '').zfill(MPLSFrame.label_S_length) + pkt.to_byte_S())
+        encap_value = self.encap_tbl_D.get(pkt.dst, '')
+        if type(encap_value) is dict:
+            encap_value = encap_value.get(str(i))
+        m_fr = MPLSFrame.from_byte_S(encap_value.zfill(MPLSFrame.label_S_length) + pkt.to_byte_S())
         #print("Label: " + m_fr.label)
         #print("Destination: " + m_fr.dst)
         #print("Data: " + m_fr.data_S)
@@ -251,7 +252,7 @@ class Router:
     #  @param i Incoming interface number for the frame
     def process_MPLS_frame(self, m_fr, i):
         #TODO: implement MPLS forward, or MPLS decapsulation if this is the last hop router for the path
-        #print("Label: " + m_fr.label)
+        print("Label: " + m_fr.label)
         data = self.frwd_tbl_D.get(m_fr.label, '')
         #print("Data: " + data)
         if data != '':
