@@ -40,7 +40,7 @@ class Interface:
         packet = 0
         if in_or_out == 'out':
             if self.out_queue != '':
-                print("My queue is: ",self.out_queue)
+                pass
             self.out_queue.put(pkt, block)
 
             # if packet.priority == 1:
@@ -74,7 +74,9 @@ class NetworkPacket:
     def to_byte_S(self):
         byte_S = str(self.dst).zfill(self.dst_S_length)
         byte_S += str(self.priority)
+        print("destination + priority, before data (should be):",byte_S)
         byte_S += self.data_S
+        print("my byte_S: ",byte_S)
         return byte_S
     
     ## extract a packet object from a byte string
@@ -84,7 +86,8 @@ class NetworkPacket:
         dst = byte_S[0 : NetworkPacket.dst_S_length].strip('0')
         priority = byte_S[NetworkPacket.dst_S_length : NetworkPacket.dst_S_length + 1]
         data_S = byte_S[NetworkPacket.dst_S_length + 1: ]
-        return self(dst, priority, data_S)
+        print("From byte has received: ",byte_S,"with priority",priority)
+        return self(dst, data_S,priority)
 
 
 class MPLSFrame:
@@ -115,11 +118,14 @@ class MPLSFrame:
         return byte_S
 
     def from_Network_Packet(self, lbl, byte_S):
+        print("In mpls class, from packet data_S: ",byte_S)
+
         label = lbl
         dst = byte_S[MPLSFrame.label_S_length : MPLSFrame.dst_S_length].strip('0')
         priority = byte_S[MPLSFrame.dst_S_length: MPLSFrame.dst_S_length+1]
         data_S = byte_S[MPLSFrame.dst_S_length +1: ]
 
+        print("The priority there (should be):",priority)
         self.priority = priority
         self.label = label
         self.dst = dst
@@ -139,13 +145,10 @@ class MPLSFrame:
     @classmethod
     def from_byte_S(self, byte_S):
         label = byte_S[0 : MPLSFrame.label_S_length].strip('0')
-        #print("Conversion label: " + label)
         dst = byte_S[MPLSFrame.label_S_length : MPLSFrame.label_S_length+MPLSFrame.dst_S_length].strip('0')
         priority =  byte_S[MPLSFrame.dst_S_length + MPLSFrame.label_S_length: MPLSFrame.dst_S_length + MPLSFrame.label_S_length +1]
-        #print("Conversion dst: " + dst)
         data_S = byte_S[MPLSFrame.dst_S_length + MPLSFrame.label_S_length+1: ]
-        #print("Conversion data: " + data_S)
-        return self(label, dst, priority, data_S)
+        return self(label, dst, data_S,priority)
 
 
 ## Implements a network host for receiving and transmitting data
@@ -260,7 +263,7 @@ class Router:
         encap_value = self.encap_tbl_D.get(pkt.dst, '')
         if type(encap_value) is dict:
             encap_value = encap_value.get(str(i))
-        m_fr = MPLSFrame.from_byte_S(encap_value.zfill(MPLSFrame.label_S_length) + pkt.to_byte_S())
+        m_fr = MPLSFrame.from_byte_S(encap_value.zfill(MPLSFrame.label_S_length) + pkt.priority+ pkt.to_byte_S())
         #print("Label: " + m_fr.label)
         #print("Destination: " + m_fr.dst)
         #print("Data: " + m_fr.data_S)
