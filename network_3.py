@@ -73,6 +73,7 @@ class NetworkPacket:
     ## convert packet to a byte string for transmission over links
     def to_byte_S(self):
         byte_S = str(self.dst).zfill(self.dst_S_length)
+        byte_S += str(self.priority)
         byte_S += self.data_S
         return byte_S
     
@@ -81,8 +82,9 @@ class NetworkPacket:
     @classmethod
     def from_byte_S(self, byte_S):
         dst = byte_S[0 : NetworkPacket.dst_S_length].strip('0')
-        data_S = byte_S[NetworkPacket.dst_S_length : ]        
-        return self(dst, data_S)
+        priority = byte_S[NetworkPacket.dst_S_length : NetworkPacket.dst_S_length + 1]
+        data_S = byte_S[NetworkPacket.dst_S_length + 1: ]
+        return self(dst, priority, data_S)
 
 
 class MPLSFrame:
@@ -115,6 +117,8 @@ class MPLSFrame:
         label = lbl
         dst = byte_S[MPLSFrame.label_S_length : MPLSFrame.dst_S_length].strip('0')
         data_S = byte_S[MPLSFrame.dst_S_length : ]
+
+
         self.label = label
         self.dst = dst
         self.data_S = data_S
@@ -124,6 +128,7 @@ class MPLSFrame:
     def to_byte_S(self):
         byte_S = str(self.label).zfill(self.label_S_length)
         byte_S += str(self.dst).zfill(self.dst_S_length)
+        byte_S += str(self.priority)
         byte_S += self.data_S
         return byte_S
     
@@ -134,10 +139,11 @@ class MPLSFrame:
         label = byte_S[0 : MPLSFrame.label_S_length].strip('0')
         #print("Conversion label: " + label)
         dst = byte_S[MPLSFrame.label_S_length : MPLSFrame.label_S_length+MPLSFrame.dst_S_length].strip('0')
+        priority =  byte_S[MPLSFrame.dst_S_length + MPLSFrame.label_S_length: MPLSFrame.dst_S_length + MPLSFrame.label_S_length +1]
         #print("Conversion dst: " + dst)
-        data_S = byte_S[MPLSFrame.dst_S_length + MPLSFrame.label_S_length : ]
+        data_S = byte_S[MPLSFrame.dst_S_length + MPLSFrame.label_S_length+1: ]
         #print("Conversion data: " + data_S)
-        return self(label, dst, data_S)
+        return self(label, dst, priority, data_S)
 
 
 ## Implements a network host for receiving and transmitting data
