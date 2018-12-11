@@ -110,15 +110,17 @@ class MPLSFrame:
 
     def to_Network_Packet(self):
         byte_S = str(self.dst).zfill(self.dst_S_length)
+        byte_S += self.priority
         byte_S += self.data_S
         return byte_S
 
     def from_Network_Packet(self, lbl, byte_S):
         label = lbl
         dst = byte_S[MPLSFrame.label_S_length : MPLSFrame.dst_S_length].strip('0')
-        data_S = byte_S[MPLSFrame.dst_S_length : ]
+        priority = byte_S[MPLSFrame.dst_S_length: MPLSFrame.dst_S_length+1]
+        data_S = byte_S[MPLSFrame.dst_S_length +1: ]
 
-
+        self.priority = priority
         self.label = label
         self.dst = dst
         self.data_S = data_S

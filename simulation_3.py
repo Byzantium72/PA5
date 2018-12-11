@@ -41,7 +41,7 @@ if __name__ == '__main__':
     #If it's 11, decapsulate, and send it to H2
     decap_tbl_D = {}
     router_b = Router(name='RB', 
-                              intf_capacity_L=[500,100],
+                              intf_capacity_L=[500,500],
                               encap_tbl_D = encap_tbl_D,
                               frwd_tbl_D = frwd_tbl_D,
                               decap_tbl_D = decap_tbl_D,
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     frwd_tbl_D = {'5': ['6', 'H3', 1],'6':['8','H2',0]}
     decap_tbl_D = {}
     router_c = Router(name='RC',
-                              intf_capacity_L=[500,100],
+                              intf_capacity_L=[500,500],
                               encap_tbl_D = encap_tbl_D,
                               frwd_tbl_D = frwd_tbl_D,
                               decap_tbl_D = decap_tbl_D,
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     frwd_tbl_D = {'1': ['7', 'H1', 2], '2':['8','H2',1], '6':['97','H3',0]}     # table used to forward MPLS frames
     decap_tbl_D = {'97':'H3'}    # table used to decapsulate network packets from MPLS frames
     router_d = Router(name='RD',
-                              intf_capacity_L=[500,500, 100],
+                              intf_capacity_L=[100, 100, 100],
                               encap_tbl_D = encap_tbl_D,
                               frwd_tbl_D = frwd_tbl_D,
                               decap_tbl_D = decap_tbl_D,
