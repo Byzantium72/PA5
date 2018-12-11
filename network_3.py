@@ -8,8 +8,10 @@ class Interface:
     ## @param maxsize - the maximum size of the queue storing packets
     #  @param capacity - the capacity of the link in bps
     def __init__(self, maxsize=0, capacity=500):
-        self.in_queue = queue.Queue(maxsize);
-        self.out_queue = queue.Queue(maxsize);
+        self.in_queue = queue.Queue(maxsize)
+        self.out_queue = queue.Queue(maxsize)
+        self.in_queue1 = queue.Queue(maxsize)
+        self.out_queue1 = queue.Queue(maxsize)
         self.capacity = capacity #serialization rate
         self.next_avail_time = 0 #the next time the interface can transmit a packet
     
@@ -35,17 +37,24 @@ class Interface:
     # @param in_or_out - use 'in' or 'out' interface
     # @param block - if True, block until room in queue, if False may throw queue.Full exception
     def put(self, pkt, in_or_out, block=False):
+        packet = 0
         if in_or_out == 'out':
-            # print('putting packet in the OUT queue')
+            if self.out_queue != '':
+                print("My queue is: ",self.out_queue)
             self.out_queue.put(pkt, block)
+
+            # if packet.priority == 1:
+            #     print("Adding priority 1 to queue")
+            #     self.out_queue1.put(pkt, block)
+            # # print('putting packet in the OUT queue')
+            # else:
+            #    self.out_queue.put(pkt, block)
         else:
             # print('putting packet in the IN queue')
             self.in_queue.put(pkt, block)
             
         
 ## Implements a network layer packet
-# NOTE: You will need to extend this class for the packet to include
-# the fields necessary for the completion of this assignment.
 class NetworkPacket:
     ## packet encoding lengths 
     dst_S_length = 5
