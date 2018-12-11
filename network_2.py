@@ -230,20 +230,12 @@ class Router:
     #  @param p Packet to forward
     #  @param i Incoming interface number for packet p
     def process_network_packet(self, pkt, i):
-        #TODO: encapsulate the packet in an MPLS frame based on self.encap_tbl_D
-        #for now, we just relabel the packet as an MPLS frame without encapsulation
         data_S = pkt.to_byte_S()
-        #destination = str(self.encap_tbl_D[pkt.dst).zfill(pkt.dst_S_length))
-        #print("***********content of dictionary: " + str(self.encap_tbl_D.get(pkt.dst, '').zfill(MPLSFrame.label_S_length) + pkt.to_byte_S()))
         encap_value = self.encap_tbl_D.get(pkt.dst, '')
         if type(encap_value) is dict:
             encap_value = encap_value.get(str(i))
         m_fr = MPLSFrame.from_byte_S(encap_value.zfill(MPLSFrame.label_S_length) + pkt.to_byte_S())
-        #print("Label: " + m_fr.label)
-        #print("Destination: " + m_fr.dst)
-        #print("Data: " + m_fr.data_S)
         print('%s: encapsulated packet "%s" as MPLS frame "%s"' % (self, pkt, m_fr))
-        #send the encapsulated packet for processing as MPLS frame
         self.process_MPLS_frame(m_fr, i)
 
 
